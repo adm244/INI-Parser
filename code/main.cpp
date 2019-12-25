@@ -44,6 +44,9 @@ int main(int argc, char *argv[])
   int int_value = ini_read_int("TestSection", "key1", -1);
   printf("%d\n", int_value);
   
+  float float_value = ini_read_float("TestSection", "key_float", 0.0f);
+  printf("%g\n", float_value);
+  
   bool bool_value = ini_read_bool(0, "globalkey", false);
   printf("%s\n", bool_value ? "true" : "false");
   
