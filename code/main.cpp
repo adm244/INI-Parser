@@ -42,19 +42,22 @@ int main(int argc, char *argv[])
     printf("FAILURE!\n");
   
   int int_value = ini_read_int("TestSection", "key1", -1);
-  printf("%d\n", int_value);
+  printf("INT: %d\n", int_value);
+  
+  float float_int_value = ini_read_float("TestSection", "key1", 0.0f);
+  printf("INT AS FLOAT: %f\n", float_int_value);
   
   float float_value = ini_read_float("TestSection", "key_float", 0.0f);
-  printf("%g\n", float_value);
+  printf("FLOAT: %g\n", float_value);
   
   bool bool_value = ini_read_bool(0, "globalkey", false);
-  printf("%s\n", bool_value ? "true" : "false");
+  printf("BOOL: %s\n", bool_value ? "true" : "false");
   
   char *str_value = ini_read_string("TestSection", "key4", "default");
-  printf("%s\n", str_value);
+  printf("STRING: %s\n", str_value);
   
   wchar_t *wstr_value = ini_read_wstring("TestSection2", "key1", L"default");
-  wprintf(L"%ls\n", wstr_value);
+  wprintf(L"WSTRING: %ls\n", wstr_value);
   
   return 0;
 }

@@ -52,7 +52,7 @@ OTHER DEALINGS IN THE SOFTWARE.
     - Empty (global) section is supported
     - Section name is considered to be a string enclosed in DOUBLE_QUOTE ('"')
     - Key is one word only
-    - Value can be INT, BOOL, STRING (char *) or WSTRING (wchar_t *)
+    - Value can be INT, FLOAT, BOOL, STRING (char *) or WSTRING (wchar_t *)
     - WSTRING is assumed to be in UTF-8 encoding
     - Hexadecimal\octal\binary format of INT is NOT supported
     - Escaped characters (\t, \n, \x, etc.) are NOT supported
@@ -537,17 +537,31 @@ internal bool ini_convert_utf8_to_utf16(char *src, wchar_t *dest, size_t count)
   return true;
 }
 
-internal bool has_decimal_point(char *buffer)
+internal bool is_float(char *buffer)
 {
+  bool result = false;
+  
   char *p = buffer;
-  while (*p != '\0') {
-    if (*p == '.') {
-      return true;
-    }
+  if (is_sign(*p)) {
     ++p;
   }
   
-  return false;
+  while (*p != '\0') {
+    if (*p == '.') {
+      if (result) {
+        return false;
+      }
+      result = true;
+    } else {
+      if (!is_number(*p)) {
+        return false;
+      }
+    }
+    
+    ++p;
+  }
+  
+  return result;
 }
 
 internal bool ini_parse_value(char *buffer, ini_value_t *value)
@@ -557,42 +571,7 @@ internal bool ini_parse_value(char *buffer, ini_value_t *value)
   
   value->type = INI_VALUE_GARBAGE;
   
-  if (has_decimal_point(buffer)) {
-    if (sscanf_s(buffer, "%f", &value->real) > 0) {
-      value->type = INI_VALUE_FLOAT;
-      return true;
-    }
-  }
-  
-  else if (is_number(buffer[0]) || is_sign(buffer[0])) {
-    char *p = is_sign(buffer[0]) ? buffer + 1 : buffer;
-    int number = 0;
-    
-    while (*p != '\0') {
-      if (!is_number(*p)) {
-        break;
-      }
-      
-      number *= 10;
-      number += (*p - '0');
-      
-      ++p;
-    }
-    
-    if (*p != '\0') {
-      return false;
-    }
-    
-    if (buffer[0] == '-') {
-      number = -number;
-    }
-    
-    value->type = INI_VALUE_INT;
-    value->number = number;
-    return true;
-  }
-  
-  else if ((buffer[0] == 't') || (buffer[0] == 'f')) {
+  if ((buffer[0] == 't') || (buffer[0] == 'f')) {
     if (strcmp(buffer, "true") == 0) {
       value->type = INI_VALUE_BOOL;
       value->boolean = true;
@@ -643,6 +622,41 @@ internal bool ini_parse_value(char *buffer, ini_value_t *value)
     
     value->type = INI_VALUE_WSTRING;
     value->wstr = str_utf16;
+    return true;
+  }
+  
+  else if (is_float(buffer)) {
+    if (sscanf_s(buffer, "%f\0", &value->real) > 0) {
+      value->type = INI_VALUE_FLOAT;
+      return true;
+    }
+  }
+  
+  else if (is_number(buffer[0]) || is_sign(buffer[0])) {
+    char *p = is_sign(buffer[0]) ? buffer + 1 : buffer;
+    int number = 0;
+    
+    while (*p != '\0') {
+      if (!is_number(*p)) {
+        break;
+      }
+      
+      number *= 10;
+      number += (*p - '0');
+      
+      ++p;
+    }
+    
+    if (*p != '\0') {
+      return false;
+    }
+    
+    if (buffer[0] == '-') {
+      number = -number;
+    }
+    
+    value->type = INI_VALUE_INT;
+    value->number = number;
     return true;
   }
   
@@ -814,6 +828,10 @@ internal float ini_read_float(char *section, char *key, float default)
   
   if (value->type == INI_VALUE_FLOAT) {
     return value->real;
+  }
+  
+  if (value->type == INI_VALUE_INT) {
+    return (float)value->number;
   }
   
   return default;

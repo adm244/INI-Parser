@@ -2,7 +2,7 @@
 
 Basic INI-like file parser with no dynamic memory allocations that supports integer, float, boolean, string and wide-string types.
 
-### EXAMPLE
+### Example
 ```
 global_key = 0
 
@@ -21,7 +21,7 @@ key1 = "some c-string"
 key2 = L"some wide string (converted to utf16)"
 ```
 
-### NOTES
+### Notes
 - No dynamic memory allocations
 - Uses two arenas to store parsed data
 - Uses WinAPI for file reads and utf8-to-utf16 conversion
@@ -30,12 +30,12 @@ key2 = L"some wide string (converted to utf16)"
 - Empty (global) section is supported
 - Section name is considered to be a string enclosed in DOUBLE_QUOTE ('"')
 - Key is one word only
-- Value can be INT, BOOL, STRING (char *) or WSTRING (wchar_t *)
+- Value can be INT, FLOAT, BOOL, STRING (char *) or WSTRING (wchar_t *)
 - WSTRING is assumed to be in UTF-8 encoding
 - Hexadecimal\octal\binary format of INT is NOT supported
 - Escaped characters (\t, \n, \x, etc.) are NOT supported
 
-### USAGE
+### Usage
 ```
   #define INI_STORAGE_SIZE 1024
   internal char ini_storage[INI_STORAGE_SIZE];
@@ -56,5 +56,5 @@ key2 = L"some wide string (converted to utf16)"
   }
 ```
 
-## LICENSE
+## License
 Public domain
