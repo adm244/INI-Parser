@@ -721,7 +721,7 @@ internal bool ini_parse_buffer(char *buffer, size_t size)
     line = ini_strip_comments(line);
     line = ini_strip_whitespace(line);
     
-    if (strlen(line) == 0)
+    if (line[0] == '\0')
       continue;
     
     if (!ini_parse_line(line)) {
