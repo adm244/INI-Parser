@@ -583,6 +583,8 @@ internal bool ini_parse_value(char *buffer, ini_value_t *value)
       value->boolean = false;
       return true;
     }
+    
+    return false;
   }
   
   else if (buffer[0] == '\"') {
@@ -630,6 +632,8 @@ internal bool ini_parse_value(char *buffer, ini_value_t *value)
       value->type = INI_VALUE_FLOAT;
       return true;
     }
+    
+    return false;
   }
   
   else if (is_number(buffer[0]) || is_sign(buffer[0])) {
